@@ -1,70 +1,66 @@
-// src/models/notificationModel.ts
-import { pool } from '../config/database';
-import { Notification, CreateNotificationRequest, UpdateNotificationRequest, NotificationStatus } from '../types/notification';
+// src/models/Notification.ts
+import { Schema, model, Document } from 'mongoose';
 
-export class NotificationModel {
-  static async findAll(): Promise<Notification[]> {
-    const result = await pool.query(`
-      SELECT * FROM notifications ORDER BY created_at DESC
-    `);
-    return result.rows;
-  }
-
-  static async findById(id: string): Promise<Notification | null> {
-    const result = await pool.query(
-      'SELECT * FROM notifications WHERE id = $1',
-      [id]
-    );
-    return result.rows[0] || null;
-  }
-
-  static async create(data: CreateNotificationRequest): Promise<Notification> {
-    const result = await pool.query(
-      `INSERT INTO notifications (title, description, hearing_date, status)
-       VALUES ($1, $2, $3, $4)
-       RETURNING *`,
-      [data.title, data.description, data.hearing_date, 'Em Andamento']
-    );
-    return result.rows[0];
-  }
-
-  static async update(id: string, data: UpdateNotificationRequest): Promise<Notification> {
-    const fields = [];
-    const values = [];
-    let paramCount = 1;
-
-    Object.entries(data).forEach(([key, value]) => {
-      if (value !== undefined) {
-        fields.push(`${key} = $${paramCount}`);
-        values.push(value);
-        paramCount++;
-      }
-    });
-
-    if (fields.length === 0) {
-      throw new Error('Nenhum campo para atualizar');
-    }
-
-    fields.push('updated_at = CURRENT_TIMESTAMP');
-    values.push(id);
-
-    const result = await pool.query(
-      `UPDATE notifications SET ${fields.join(', ')} WHERE id = $${paramCount} RETURNING *`,
-      values
-    );
-
-    return result.rows[0];
-  }
-
-  static async updateStatus(id: string, status: NotificationStatus): Promise<Notification> {
-    const result = await pool.query(
-      `UPDATE notifications SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 RETURNING *`,
-      [status, id]
-    );
-    return result.rows[0];
-  }
-
-  static async delete(id: string): Promise<void> {
-    await pool.query('DELETE FROM notifications WHERE id = $1', [id]);
-  }
+export interface INotification extends Document {
+  title: string;
+  description: string;
+  hearing_date: Date;
+  status: 'Em Andamento' | 'Validação' | 'Concluído';
+  notified_name?: string;
+  notified_email?: string;
+  notified_phone?: string;
+  notified_address?: string;
+  needs_additional_info?: boolean;
 }
+
+const NotificationSchema = new Schema<INotification>({
+  title: {
+    type: String,
+    required: [true, 'Título é obrigatório'],
+    maxlength: [255, 'Título muito longo']
+  },
+  description: {
+    type: String,
+    required: [true, 'Descrição é obrigatória']
+  },
+  hearing_date: {
+    type: Date,
+    required: [true, 'Data da audiência é obrigatória']
+  },
+  status: {
+    type: String,
+    enum: {
+      values: ['Em Andamento', 'Validação', 'Concluído'],
+      message: 'Status inválido'
+    },
+    default: 'Em Andamento'
+  },
+  notified_name: {
+    type: String,
+    maxlength: [255, 'Nome muito longo']
+  },
+  notified_email: {
+    type: String,
+    maxlength: [255, 'Email muito longo'],
+    match: [/^\S+@\S+\.\S+$/, 'Email inválido']
+  },
+  notified_phone: {
+    type: String,
+    maxlength: [20, 'Telefone muito longo']
+  },
+  notified_address: {
+    type: String,
+    maxlength: [500, 'Endereço muito longo']
+  },
+  needs_additional_info: {
+    type: Boolean,
+    default: false
+  }
+}, {
+  timestamps: {
+    createdAt: 'created_at',
+    updatedAt: 'updated_at'
+  }
+});
+
+export const Notification = model<INotification>('Notification', NotificationSchema);

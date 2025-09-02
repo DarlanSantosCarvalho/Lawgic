@@ -1,21 +1,28 @@
-;import { Pool } from 'pg';
+;import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+
 
 dotenv.config();
 
-export const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
-});
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/lawgic_db';
 
-// Testar conexão
-export const testConnection = async () => {
+export const connectDB = async (): Promise<void> => {
   try {
-    const client = await pool.connect();
-    console.log('✅ Conectado ao PostgreSQL');
-    client.release();
+    await mongoose.connect(MONGODB_URI);
+    console.log('✅ Conectado ao MongoDB Local');
+
+    if (mongoose.connection.db) {
+      console.log('📊 Database:', mongoose.connection.db.databaseName);
+    } else {
+      console.log('📊 Database: Conectado (nome não disponível)');
+    }
   } catch (error) {
-    console.error('❌ Erro ao conectar com PostgreSQL:', error);
+    console.error('❌ Erro ao conectar com MongoDB:', error);
     process.exit(1);
   }
+};
+
+export const disconnectDB = async (): Promise<void> => {
+  await mongoose.disconnect();
+  console.log('📴 Desconectado do MongoDB');
 };

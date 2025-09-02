@@ -1,11 +1,10 @@
-// src/types/notification.ts
 export type NotificationStatus = 'Em Andamento' | 'Validação' | 'Concluído';
 
 export interface Notification {
-  id: string;
+  _id: string;
   title: string;
   description: string;
-  hearing_date: string;
+  hearing_date: Date;
   status: NotificationStatus;
   notified_name?: string;
   notified_email?: string;
@@ -15,6 +14,8 @@ export interface Notification {
   created_at: Date;
   updated_at: Date;
 }
+
+// ... restante das interfaces mantêm-se
 
 export interface CreateNotificationRequest {
   title: string;

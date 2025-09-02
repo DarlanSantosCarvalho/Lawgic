@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { api } from "@/lib/api";
+import { notificationService } from "@/services/notificationService";
 import Link from "next/link";
 
 export default function CreateNotification() {
@@ -12,7 +12,7 @@ export default function CreateNotification() {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    hearingDate: "",
+    hearing_date: "", // MongoDB espera hearing_date (com underscore)
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -25,17 +25,24 @@ export default function CreateNotification() {
     setIsSubmitting(true);
     
     try {
-      // Mock da criação - será substituído pela API real
-      console.log("Criando notificação:", formData);
+      // Criar notificação via API real
+      const newNotification = await notificationService.create({
+        title: formData.title,
+        description: formData.description,
+        hearing_date: formData.hearing_date
+      });
       
-      // Simular delay de API
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Redirecionar para a página de detalhes (com ID mock)
-      router.push("/notifications/1");
-    } catch (error) {
+      // Redirecionar para a página de detalhes com ID real
+      router.push(`/notifications/${newNotification._id}`);
+    } catch (error: any) {
       console.error("Erro ao criar notificação:", error);
-      alert("Erro ao criar notificação. Tente novamente.");
+      
+      // Mostrar mensagem de erro específica se disponível
+      if (error.response?.data?.error) {
+        alert(`Erro: ${error.response.data.error}`);
+      } else {
+        alert("Erro ao criar notificação. Tente novamente.");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -64,6 +71,7 @@ export default function CreateNotification() {
             onChange={handleChange}
             required
             className="w-full px-3 py-2 border text-black border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Ex: Notificação Criminal - Processo 123"
           />
         </div>
 
@@ -79,18 +87,19 @@ export default function CreateNotification() {
             required
             rows={4}
             className="w-full px-3 py-2 border text-black border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Descreva os detalhes da notificação judicial..."
           />
         </div>
 
         <div className="mb-6">
-          <label htmlFor="hearingDate" className="block text-sm font-medium text-black mb-1">
+          <label htmlFor="hearing_date" className="block text-sm font-medium text-black mb-1">
             Data da Audiência *
           </label>
           <input
             type="date"
-            id="hearingDate"
-            name="hearingDate"
-            value={formData.hearingDate}
+            id="hearing_date"
+            name="hearing_date"
+            value={formData.hearing_date}
             onChange={handleChange}
             required
             className="w-full px-3 py-2 text-black border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -100,14 +109,14 @@ export default function CreateNotification() {
         <div className="flex justify-end space-x-3">
           <Link
             href="/"
-            className="px-4 py-2 border border-gray-300 rounded-md text-black hover:bg-gray-50"
+            className="px-4 py-2 border border-gray-300 rounded-md text-black hover:bg-gray-50 transition-colors"
           >
             Cancelar
           </Link>
           <button
             type="submit"
             disabled={isSubmitting}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {isSubmitting ? "Criando..." : "Criar Notificação"}
           </button>

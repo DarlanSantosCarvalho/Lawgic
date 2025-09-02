@@ -1,41 +1,41 @@
-// src/server.ts
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import 'express-async-errors';
 
-import { testConnection } from './config/database';
+import { connectDB } from './config/database';
 import routes from './routes';
 import { errorHandler } from './middleware/errorHandler';
-import { notFound } from './middleware/notFound';
+import { notFound } from './middleware/errorHandler';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Middlewares
 app.use(helmet());
 app.use(cors());
-app.use(morgan('combined'));
+app.use(morgan('dev'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// Routes
 app.use('/api', routes);
-
-// Error handling
-app.use(notFound);
+app.use(cors({
+  origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(errorHandler);
+app.use(notFound);
 
 const startServer = async () => {
   try {
-    // Testar conexão com o banco
-    await testConnection();
+    await connectDB();
 
     app.listen(PORT, () => {
       console.log(`🚀 Servidor rodando na porta ${PORT}`);
-      console.log(`📊 Ambiente: ${process.env.NODE_ENV}`);
-      console.log(`🌐 Health check: http://localhost:${PORT}/api/health`);
+      console.log(`🌐 Ambiente: ${process.env.NODE_ENV}`);
+      console.log(`📊 MongoDB: Conectado`);
     });
   } catch (error) {
     console.error('❌ Falha ao iniciar o servidor:', error);
