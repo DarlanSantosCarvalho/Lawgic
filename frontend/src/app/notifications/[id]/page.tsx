@@ -157,7 +157,7 @@ export default function NotificationDetail() {
       case "Em Andamento":
         return (
           <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold mb-4">Informações da Notificação</h2>
+            <h2 className="text-xl text-black font-semibold mb-4">Informações da Notificação</h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               <div>
@@ -176,7 +176,7 @@ export default function NotificationDetail() {
               </div>
             </div>
 
-            <h3 className="text-lg font-medium mb-4 mt-8">Informações do Notificado</h3>
+            <h3 className="text-lg text-black font-medium mb-4 mt-8">Informações do Notificado</h3>
             <p className="text-sm text-gray-600 mb-4">
               Preencha as informações da pessoa que será notificada.
             </p>
@@ -193,7 +193,7 @@ export default function NotificationDetail() {
                   value={formData.notifiedName}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full text-black px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
@@ -208,7 +208,7 @@ export default function NotificationDetail() {
                   value={formData.notifiedEmail}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 text-black py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
@@ -223,7 +223,7 @@ export default function NotificationDetail() {
                   value={formData.notifiedPhone}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full text-black px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
@@ -238,7 +238,7 @@ export default function NotificationDetail() {
                   onChange={handleInputChange}
                   required
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full text-black px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -259,13 +259,13 @@ export default function NotificationDetail() {
       case "Validação":
         return (
           <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-semibold mb-4">Validação da Notificação</h2>
+            <h2 className="text-xl text-black font-semibold mb-4">Validação da Notificação</h2>
             <p className="text-sm text-gray-600 mb-6">
               Verifique todas as informações da notificação. Se necessário, solicite informações adicionais.
             </p>
 
             <div className="mb-8">
-              <h3 className="text-lg font-medium mb-4">Informações da Notificação</h3>
+              <h3 className="text-lg text-black font-medium mb-4">Informações da Notificação</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-black mb-1">Título</label>
@@ -285,7 +285,7 @@ export default function NotificationDetail() {
             </div>
 
             <div className="mb-8">
-              <h3 className="text-lg font-medium mb-4">Informações do Notificado</h3>
+              <h3 className="text-lg text-black font-medium mb-4">Informações do Notificado</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-black mb-1">Nome Completo</label>
@@ -344,11 +344,11 @@ export default function NotificationDetail() {
               <h2 className="text-2xl font-bold text-gray-800 mb-2">Notificação Concluída</h2>
               <p className="text-gray-600 mb-6">Esta notificação judicial foi processada com sucesso.</p>
               
-              <div className="max-w-md mx-auto text-left bg-gray-50 p-4 rounded-lg">
-                <h3 className="font-medium mb-2">Resumo da Notificação</h3>
-                <p><span className="font-medium">Título:</span> {notification.title}</p>
-                <p><span className="font-medium">Data da Audiência:</span> {new Date(notification.hearingDate).toLocaleDateString("pt-BR")}</p>
-                <p><span className="font-medium">Notificado:</span> {notification.notifiedName}</p>
+              <div className="max-w-md mx-auto text-left bg-gray-400 p-4 rounded-lg">
+                <h3 className="font-medium text-black mb-2">Resumo da Notificação</h3>
+                <p className="text-black text-bold"><span className="font-medium text-black">Título:</span> {notification.title}</p>
+                <p className="text-black text-bold"><span className="font-medium text-black">Data da Audiência:</span> {new Date(notification.hearingDate).toLocaleDateString("pt-BR")}</p>
+                <p className="text-black text-bold"><span className="font-medium text-black">Notificado:</span> {notification.notifiedName}</p>
               </div>
               
               <Link
